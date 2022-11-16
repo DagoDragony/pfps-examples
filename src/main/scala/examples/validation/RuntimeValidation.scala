@@ -282,8 +282,13 @@ object NewtypeRefinedOps {
   }
 
   final class NewtypeRefinedPartiallyApplied[A] {
+    // A eg. UserName
+    // Coercible[Refined[String, NonEmpty], UserName]
     def apply[T, P](raw: T)(implicit
+        // Refined[T, P] eg. String Refined NonEmpty (Refined[String, NonEmpty]
+        // generated in macros https://github.com/estatico/scala-newtype/blob/master/shared/src/main/scala/io/estatico/newtype/macros/NewTypeMacros.scala
         c: Coercible[Refined[T, P], A],
+        // TODO: where validate comes from?
         v: Validate[T, P]
     ): EitherNel[String, A] =
       refineV[P](raw).toEitherNel.map(_.coerce[A])
