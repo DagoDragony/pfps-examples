@@ -1,16 +1,16 @@
 package examples.validation
 
 import scala.util.control.NoStackTrace
-
-import cats.data.{ EitherNel, ValidatedNel }
+import cats.data.{EitherNel, ValidatedNel}
 import cats.effect._
 import cats.implicits._
 import eu.timepit.refined._
 import eu.timepit.refined.api._
 import eu.timepit.refined.auto._
-import eu.timepit.refined.collection.Contains
+import eu.timepit.refined.collection.{Contains, NonEmpty}
 import eu.timepit.refined.numeric.Greater
 import eu.timepit.refined.types.string.NonEmptyString
+import examples.validation.types.UserName
 import io.estatico.newtype.macros._
 import shapeless._
 
@@ -292,6 +292,15 @@ object NewtypeRefinedOps {
         v: Validate[T, P]
     ): EitherNel[String, A] =
       refineV[P](raw).toEitherNel.map(_.coerce[A])
+  }
+
+
+  final class NewtypeRefinedPartiallyApplied2 {
+    def apply(raw: String)(implicit
+                            c: Coercible[NonEmptyString, UserName],
+                            v: Validate[String, NonEmpty]
+    ): EitherNel[String, UserName] =
+      refineV[NonEmpty](raw).toEitherNel.map(_.coerce[UserName])
   }
 
   def validate[A]: NewtypeRefinedPartiallyApplied[A] = new NewtypeRefinedPartiallyApplied[A]
