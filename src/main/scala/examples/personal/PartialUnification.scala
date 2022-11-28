@@ -11,6 +11,7 @@ object PartialUnification {
   val func2 = (x: Double) => x * 2
   val func3 = (x: Double) => x.toString
 
+  // TODO: how function functor looks?
   // similar effect to andThen composition
   func1.map(func2)
 
