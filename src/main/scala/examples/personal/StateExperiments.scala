@@ -48,7 +48,7 @@ object StateExperiments extends IOApp.Simple {
   def printlnIO(string: String) = IO.delay(println(string))
   override def run = IO.delay(for {
     (n1, n2, n3) <- randomNumbers.runA(Seed(0L))
-    _ <- StateT printlnIO(s"$n1 $n2 $n3")
+    _ <- StateT.liftK[IO, State](printlnIO(s"$n1 $n2 $n3"))
   } yield ())
 }
 
