@@ -33,20 +33,31 @@ object StateExperiments extends IOApp.Simple {
   val nextLong: State[Seed, Long] = State(seed => (seed.next, seed.long))
   def nextBoolean(seed: Seed): (Seed, Boolean) = (seed.next, seed.long >= 0L)
 
-  val result: IndexedStateT[Eval, Seed, Seed, (Long, Long, Long)] = for {
+  val result = for {
     r1 <- nextLong
     r2 <- nextLong
     r3 <- nextLong
   } yield (r1, r2, r3)
 
-
-  // how to finish program with random numbers?
-  // what final program should look like?
-  // how to lift State to StateT
-  val sth = StateT.liftK[IO, Seed](nextLong)
-  override def run = for {
-    id1 <- StateT.liftK[IO, Seed](nextLong)
+  val randomNumbers = for {
+    id1 <- nextLong
     id2 <- nextLong
-    _ <- nextLong.flatMap(IO.println())
-  } yield ()
+    id3 <- nextLong
+  } yield (id1, id2, id3)
+
+  def printlnIO(string: String) = IO.delay(println(string))
+  override def run = IO.delay(for {
+    (n1, n2, n3) <- randomNumbers.runA(Seed(0L))
+    _ <- StateT printlnIO(s"$n1 $n2 $n3")
+  } yield ())
+}
+
+object StateStack extends IOApp.Simple {
+  type Stack = List[Int]
+
+  def pop(s0: Stack): (Stack, Int) = s0 match {
+    case x :: xs => (xs, x)
+    case Nil => sys.error("stack is empty")
+  }
+  override def run: IO[Unit] = ???
 }
