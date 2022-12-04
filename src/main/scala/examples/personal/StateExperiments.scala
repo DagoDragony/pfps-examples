@@ -1,6 +1,7 @@
 package examples.personal
 
 import cats.Eval
+import cats.syntax._
 import cats.effect.{IO, IOApp}
 import cats.data.{IndexedStateT, Reader, ReaderT, State, StateT}
 
@@ -47,21 +48,32 @@ object StateExperiments extends IOApp.Simple {
 
   def printlnIO(string: String) = IO.delay(println(string))
   def readlnIO() = IO.delay(scala.io.StdIn.readLine())
-  def test = for {
+
+
+  val getSth: Reader[MyObject, String] = Reader(_.value1)
+  def test1: IO[Unit] = for {
     _ <- printlnIO("My program started")
     answer <- readlnIO()
     _ <- printlnIO("Your random long:")
-    randomLong <- nextLong.runA(Seed(0l)) 
+    // TODO: should it be runA.value in IO pure
+    randomLong <- IO.pure(nextLong.runA(Seed(0l)).value)
     _ <- printlnIO(randomLong.toString)
+    // TODO: again delay?
+    someValue <- IO.delay(getSth.lift.run(MyObject("t1", "t2")))
   } yield ()
-  override def run = test
-//    (n1, n2, n3) <- randomNumbers.runA(Seed(0L))
-//    _ <- printlnIO("test").to[Eval[(Long, Long, Long)]]
-////    _ <- StateT.liftK[IO, State](printlnIO(s"$n1 $n2 $n3"))
+
+  trait Console[F[_]] {
+    def println(line: String): F[Unit]
+    def readln(): F[String]
+  }
+  object Console {
+    def apply[F[_]](implicit console: Console[F]) = console
+  }
+
+
+  override def run = test1
 
   case class MyObject(value1: String, value2: String) {}
-
-  val getSth: Reader[MyObject, String] = Reader(_.value1)
 
 }
 
