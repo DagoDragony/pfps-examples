@@ -2,7 +2,7 @@ package examples.personal
 
 import cats.Eval
 import cats.effect.{IO, IOApp}
-import cats.data.{IndexedStateT, State, StateT}
+import cats.data.{IndexedStateT, Reader, ReaderT, State, StateT}
 
 object StateExperiments extends IOApp.Simple {
   // experiment with lifted value to state
@@ -33,7 +33,7 @@ object StateExperiments extends IOApp.Simple {
   val nextLong: State[Seed, Long] = State(seed => (seed.next, seed.long))
   def nextBoolean(seed: Seed): (Seed, Boolean) = (seed.next, seed.long >= 0L)
 
-  val result = for {
+  val result2 = for {
     r1 <- nextLong
     r2 <- nextLong
     r3 <- nextLong
@@ -46,10 +46,23 @@ object StateExperiments extends IOApp.Simple {
   } yield (id1, id2, id3)
 
   def printlnIO(string: String) = IO.delay(println(string))
-  override def run = IO.delay(for {
-    (n1, n2, n3) <- randomNumbers.runA(Seed(0L))
-    _ <- StateT.liftK[IO, State](printlnIO(s"$n1 $n2 $n3"))
-  } yield ())
+  def readlnIO() = IO.delay(scala.io.StdIn.readLine())
+  def test = for {
+    _ <- printlnIO("My program started")
+    answer <- readlnIO()
+    _ <- printlnIO("Your random long:")
+    randomLong <- nextLong.runA(Seed(0l)) 
+    _ <- printlnIO(randomLong.toString)
+  } yield ()
+  override def run = test
+//    (n1, n2, n3) <- randomNumbers.runA(Seed(0L))
+//    _ <- printlnIO("test").to[Eval[(Long, Long, Long)]]
+////    _ <- StateT.liftK[IO, State](printlnIO(s"$n1 $n2 $n3"))
+
+  case class MyObject(value1: String, value2: String) {}
+
+  val getSth: Reader[MyObject, String] = Reader(_.value1)
+
 }
 
 object StateStack extends IOApp.Simple {
