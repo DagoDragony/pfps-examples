@@ -56,8 +56,8 @@ object StateExperiments extends IOApp.Simple {
     answer <- readlnIO()
     _ <- printlnIO("Your random long:")
     // TODO: should it be runA.value in IO pure
-    randomLong <- IO.pure(nextLong.runA(Seed(0l)).value)
-    _ <- printlnIO(randomLong.toString)
+    randomLong <- nextLong
+    _ <- StateT.liftF[IO, Seed, Unit](printlnIO(randomLong.toString))
     // TODO: again delay?
     someValue <- IO.delay(getSth.lift.run(MyObject("t1", "t2")))
   } yield ()
