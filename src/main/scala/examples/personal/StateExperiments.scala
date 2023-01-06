@@ -34,12 +34,6 @@ object StateExperiments extends IOApp.Simple {
   val nextLong: State[Seed, Long] = State(seed => (seed.next, seed.long))
   def nextBoolean(seed: Seed): (Seed, Boolean) = (seed.next, seed.long >= 0L)
 
-  val result2 = for {
-    r1 <- nextLong
-    r2 <- nextLong
-    r3 <- nextLong
-  } yield (r1, r2, r3)
-
   val randomNumbers = for {
     id1 <- nextLong
     id2 <- nextLong
