@@ -1,8 +1,8 @@
 package examples.personal
 
-import cats.data.EitherT
-
-import scala.concurrent.Future
+//import cats.data.EitherT
+//
+//import scala.concurrent.Future
 
 object TTypes {
 //  import scala.concurrent.ExecutionContext.Implicits.global

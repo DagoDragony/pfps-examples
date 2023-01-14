@@ -45,16 +45,16 @@ object StateExperiments extends IOApp.Simple {
 
 
   val getSth: Reader[MyObject, String] = Reader(_.value1)
-  def test1: IO[Unit] = for {
-    _ <- printlnIO("My program started")
-    answer <- readlnIO()
-    _ <- printlnIO("Your random long:")
-    // TODO: should it be runA.value in IO pure
-    randomLong <- nextLong
-    _ <- StateT.liftF[IO, Seed, Unit](printlnIO(randomLong.toString))
-    // TODO: again delay?
-    someValue <- IO.delay(getSth.lift.run(MyObject("t1", "t2")))
-  } yield ()
+//  def test1: IO[Unit] = for {
+//    _ <- printlnIO("My program started")
+//    answer <- readlnIO()
+//    _ <- printlnIO("Your random long:")
+//    // TODO: should it be runA.value in IO pure
+//    randomLong <- nextLong
+//    _ <- StateT.liftF[IO, Seed, Unit](printlnIO(randomLong.toString))
+//    // TODO: again delay?
+//    someValue <- IO.delay(getSth.lift.run(MyObject("t1", "t2")))
+//  } yield ()
 
   trait Console[F[_]] {
     def println(line: String): F[Unit]
@@ -65,7 +65,7 @@ object StateExperiments extends IOApp.Simple {
   }
 
 
-  override def run = test1
+  override def run = ???
 
   case class MyObject(value1: String, value2: String) {}
 
